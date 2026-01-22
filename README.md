@@ -23,4 +23,4 @@ Simple app for managing e.g. reservations and messaging in an apartment building
 ## Log
 | Date | Hours | Description |
 | ----------- | ----------- | ----------- |
-| 22.1. |  |  |
+| 22.1. | 1 | project description, log and initial tickets |
