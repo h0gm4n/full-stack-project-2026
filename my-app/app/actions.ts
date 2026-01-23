@@ -1,5 +1,7 @@
 'use server'
 
+const bcrypt = require('bcrypt');
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
   const dbNameEnv = process.env.DB_NAME;
   const nameEnv = process.env.USERNAME;
@@ -30,15 +32,15 @@ export async function pingMongoDB() {
   }
 }
 
-export async function createDummyItem(formData: FormData) {
+export async function createUser(formData: FormData) {
   const username = formData.get('username');
   const password = formData.get('password');
-  console.log(`Username: ${username}, Password: ${password}`);
+  const hashedPassword = await bcrypt.hash(password, 10);
   try {
     await client.connect();
     const database = client.db("fsproject");
     const collection = database.collection("users");
-    const doc = { username: username, password: password };
+    const doc = { username: username, password: hashedPassword };
     const result = await collection.insertOne(doc);
     console.log(`New document created with the following id: ${result.insertedId}`);
   } catch (error) {
