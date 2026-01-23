@@ -14,6 +14,10 @@ const client = new MongoClient(uri, {
   }
 });
 
+export async function consoleLog() {
+  console.log("Button clicked!"); 
+}
+
 export async function pingMongoDB() {
   try {
     await client.connect();
@@ -26,12 +30,15 @@ export async function pingMongoDB() {
   }
 }
 
-export async function createDummyItem() {
+export async function createDummyItem(formData: FormData) {
+  const username = formData.get('username');
+  const password = formData.get('password');
+  console.log(`Username: ${username}, Password: ${password}`);
   try {
     await client.connect();
     const database = client.db("fsproject");
     const collection = database.collection("users");
-    const doc = { username: "User", password: "Password" };
+    const doc = { username: username, password: password };
     const result = await collection.insertOne(doc);
     console.log(`New document created with the following id: ${result.insertedId}`);
   } catch (error) {
