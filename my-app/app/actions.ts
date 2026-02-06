@@ -1,6 +1,7 @@
 'use server'
 
 import { cookies } from "next/headers";
+import {v4 as uuidv4} from 'uuid';
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -88,9 +89,14 @@ export async function createUser(formData: FormData) {
     await client.connect();
     const database = client.db("fsproject");
     const collection = database.collection("users");
-    const doc = { username: username, password: hashedPassword };
-    const result = await collection.insertOne(doc);
-    console.log(`New document created with the following id: ${result.insertedId}`);
+    let myuuid = uuidv4();
+    const credentials_doc = { id: myuuid, username: username, password: hashedPassword };
+    const credentials_result = await collection.insertOne(credentials_doc);
+    const userdata = database.collection("userdata");
+    const userdata_doc = { id: myuuid, firstName: null, lastName: null, email: null, residenceId: null };
+    const userdata_result = await userdata.insertOne(userdata_doc)
+    console.log(`New document created with the following id: ${credentials_result.insertedId}`);
+    console.log(`New document created with the following id: ${userdata_result.insertedId}`);
   } catch (error) {
     console.error(error);
   } finally {
