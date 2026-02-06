@@ -3,6 +3,8 @@
 
 import { consoleLog, createUser, pingMongoDB, validateLogin } from './actions'
 import { useState, useTransition } from 'react';
+import axios from 'axios';
+import LoginStatus from './components/LoginStatus';
 
 export default function Home() {
 
@@ -87,6 +89,7 @@ export default function Home() {
   if (registrationOpen == false) {
     return (
       <div>
+        <LoginStatus />
         <h1 className="pl-20 pt-10">Name Of App</h1>
         <form className="pl-20"action={consoleLog}>
           <button className="my-3 bg-transparent hover:bg-lime-500 text-lime-700 font-semibold hover:text-white py-2 px-4 border border-lime-500 hover:border-transparent rounded" type="submit">Console Log</button>
