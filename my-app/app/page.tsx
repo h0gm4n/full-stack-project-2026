@@ -12,11 +12,19 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
+
+    const username = formData.get('username') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       e.preventDefault();
+    } else if (username.length > 20 || username.length < 8 || password.length > 30 || password.length < 8) {
+      alert('Username must be 8-20 characters and password must be 8-30 characters');
+      e.preventDefault();
+    } else {
+      alert('User created successfully!');
+      setRegistrationOpen(false);
     }
   };
 
