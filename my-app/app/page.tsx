@@ -3,6 +3,7 @@
 
 import { consoleLog, createUser, pingMongoDB, validateLogin } from './actions'
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import LoginStatus from './components/LoginStatus';
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [isPending, startTransition] = useTransition();
   const [registrationOpen, setRegistrationOpen] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const formData = new FormData(e.currentTarget);
@@ -37,6 +39,9 @@ export default function Home() {
       try {
         const result = await validateLogin(formData);
         setMessage(result);
+        if (result === 'Login successful') {
+          router.push('/home');
+        }
       } catch (error) {
         setMessage((error as Error).message);
       }

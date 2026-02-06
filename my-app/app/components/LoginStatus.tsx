@@ -2,38 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import { verifyToken, logout } from '../actions';
+import { useRouter } from 'next/navigation';
 
-export default function LoginStatus() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+type Props = { initialUsername?: string | null; initialIsLoggedIn?: boolean };
+
+export default function LoginStatus({ initialUsername = null, initialIsLoggedIn = false }: Props) {
+  const [isLoggedIn, setIsLoggedIn] = useState(initialIsLoggedIn);
+  const [username, setUsername] = useState<string | null>(initialUsername);
+  const [loading, setLoading] = useState(!initialUsername && !initialIsLoggedIn);
+  const router = useRouter();
 
   useEffect(() => {
-    async function checkToken() {
-      try {
-        const result = await verifyToken();
-        if (result.isValid && result.user) {
-          setIsLoggedIn(true);
-          setUsername(result.user.username);
-        } else {
-          setIsLoggedIn(false);
-          setUsername(null);
-        }
-      } catch (error) {
-        setIsLoggedIn(false);
-        setUsername(null);
-      } finally {
+    if (!initialUsername) {
+      (async () => {
+        const res = await verifyToken();
+        if (res.isValid) { setIsLoggedIn(true); setUsername(res.user.username); }
         setLoading(false);
-      }
+      })();
+    } else {
+      setLoading(false);
     }
-
-    checkToken();
-  }, []);
+  }, [initialUsername]);
 
   const handleLogout = async () => {
     await logout();
     setIsLoggedIn(false);
     setUsername(null);
+    router.push('/');
   };
 
   if (loading) {
@@ -41,7 +36,7 @@ export default function LoginStatus() {
   }
 
   if (!isLoggedIn) {
-    return null; // Don't display anything if not logged in
+    return null;
   }
 
   return (

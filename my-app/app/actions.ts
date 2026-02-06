@@ -56,14 +56,14 @@ export async function validateLogin(formData: FormData) {
       console.log("Login successful");
 
       const userForToken = { username: user.username, id: user._id };
-      const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 1*60 })
+      const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60*60 })
 
       const cookieStore = await cookies();
       cookieStore.set('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60
+        maxAge: 3600
       });
 
       return "Login successful";
