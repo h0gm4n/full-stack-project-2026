@@ -26,4 +26,5 @@ Simple app for managing e.g. reservations and messaging in an apartment building
 | 22.1. | 1 | project description, log and initial tickets |
 | 23.1. | 6 | connect to mongodb, test db, lunch, initialize login and registration, create initial test |
 | 6.2. | 7 | add user credential validation rules to mongodb, lunch, add token authentication, create logged in home page, break, init new db collection for user info |
+| 12.2. | 3 | debug, improve profile/home page, refactor and separate client/server logic |  
 | total | 14 |  |
