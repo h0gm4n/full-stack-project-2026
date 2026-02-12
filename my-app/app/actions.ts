@@ -107,12 +107,13 @@ export async function createUser(formData: FormData) {
 }
 
 export async function fetchUserInfo(userid: string) {
+  const userid2 = userid
   try {
     await client.connect();
     const database = client.db(dbNameEnv);
     const userdata_collection = database.collection(userDataCollectionEnv);
-    console.log(userid)
-    const userdata = await userdata_collection.findOne({});
+    console.log(userid2)
+    const userdata = await userdata_collection.findOne({ id: userid2 });
     console.log(userdata);
     return userdata
   } catch (error) {
