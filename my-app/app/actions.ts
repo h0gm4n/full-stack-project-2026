@@ -7,11 +7,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const dbNameEnv = process.env.DB_NAME;
+
 const nameEnv = process.env.USERNAME;
 const passEnv = process.env.PASSWORD;
 const clusterNameEnv = process.env.CLUSTER_NAME;
+const dbNameEnv = process.env.DB_NAME;
 const userCollectionEnv = process.env.USER_COLLECTION;
+const userDataCollectionEnv = process.env.USERDATA_COLLECTION;
 
 const uri = `mongodb+srv://${nameEnv}:${passEnv}@${clusterNameEnv}.izhaz6k.mongodb.net/?appName=${clusterNameEnv}`
 
@@ -56,7 +58,7 @@ export async function validateLogin(formData: FormData) {
     if (user && await bcrypt.compare(password, user.password)) {
       console.log("Login successful");
 
-      const userForToken = { username: user.username, id: user._id };
+      const userForToken = { username: user.username, id: user._id, userid: user.id };
       const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60*60 })
 
       const cookieStore = await cookies();
@@ -87,16 +89,32 @@ export async function createUser(formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     await client.connect();
-    const database = client.db("fsproject");
-    const collection = database.collection("users");
+    const database = client.db(dbNameEnv);
+    const collection = database.collection(userCollectionEnv);
     let myuuid = uuidv4();
     const credentials_doc = { id: myuuid, username: username, password: hashedPassword };
     const credentials_result = await collection.insertOne(credentials_doc);
-    const userdata = database.collection("userdata");
-    const userdata_doc = { id: myuuid, firstName: null, lastName: null, email: null, residenceId: null };
+    const userdata = database.collection(userDataCollectionEnv);
+    const userdata_doc = { id: myuuid, username: username, firstName: null, lastName: null, email: null, residenceId: null };
     const userdata_result = await userdata.insertOne(userdata_doc)
     console.log(`New document created with the following id: ${credentials_result.insertedId}`);
     console.log(`New document created with the following id: ${userdata_result.insertedId}`);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await client.close();
+  }
+}
+
+export async function fetchUserInfo(userid: string) {
+  try {
+    await client.connect();
+    const database = client.db(dbNameEnv);
+    const userdata_collection = database.collection(userDataCollectionEnv);
+    console.log(userid)
+    const userdata = await userdata_collection.findOne({});
+    console.log(userdata);
+    return userdata
   } catch (error) {
     console.error(error);
   } finally {

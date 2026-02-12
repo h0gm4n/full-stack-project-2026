@@ -1,5 +1,5 @@
 import LoginStatus from '../components/LoginStatus';
-import { verifyToken } from '../actions';
+import { verifyToken, fetchUserInfo } from '../actions';
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const dbNameEnv = process.env.DB_NAME;
@@ -21,6 +21,9 @@ const client = new MongoClient(uri, {
 export default async function HomePage() {
     const result = await verifyToken();
     const username = result.isValid ? result.user.username : null;
+    const userid = result.isValid ? result.user.userid : null;
+    const loggedInUserData = await fetchUserInfo(userid)
+    const pleaseEnter = <p className="font-semibold">Please enter</p>
 
     return (
     <div className="p-8">
@@ -30,6 +33,14 @@ export default async function HomePage() {
             Welcome to the home page! You are logged in as{' '}
             {username ? <span className="font-bold">{username}</span> : 'guest'}.
         </p>
+        <div>
+          <p>Your information:</p>
+          <p>Username: {loggedInUserData.username}</p>
+          <p>First name: {loggedInUserData.firstName !== null ? loggedInUserData.firstName : <span className="font-bold">Please enter</span>}</p>
+          <p>Last name: {loggedInUserData.lastName !== null ? loggedInUserData.lastName : <span className="font-bold">Please enter</span>}</p>
+          <p>Email: {loggedInUserData.email !== null ? loggedInUserData.email : <span className="font-bold">Please enter</span>}</p>
+          <p>Current residence: {loggedInUserData.residenceId !== null ? loggedInUserData.residenceId : <span className="font-bold">Please enter</span>}</p>
+        </div>
     </div>
   );
 }
